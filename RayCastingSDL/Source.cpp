@@ -1,7 +1,8 @@
 #include <iostream>
-#include <SDL.h>
+#include "quickcg.h"
 #define mapWidth 24
 #define mapHeight 24
+using namespace QuickCG;
 
 int map[mapWidth][mapHeight]=
 {
@@ -44,10 +45,10 @@ int main(int argc, char * argv[])
 	double planeY = 0.66;
 	double time = 0;//time of current frame
 	double oldTime = 0;//time of previous frame
-	//TODO: screen and done function
-	while (true)
+	screen(512, 384, "RayCasting");
+	while (!done())
 	{
-		for (int x = 0; x < w; ++x)
+		for (int x = 0; x <w; ++x)
 		{
 			//calculate ray position and direction
 			double cameraX = 2 * x / double(w)-1; //x-coordinate in camera space
@@ -111,7 +112,57 @@ int main(int argc, char * argv[])
 				{
 					hit = 1;
 				}
+				//Calculate distance projected on camera direction (Euclidean distance will give fisheye effect!)
+				if (side == 0)
+				{
+					perpWallDist = (mapX - posX + (1 - stepX) / 2) / rayDirX;
+				}
+				else
+				{
+					perpWallDist = (mapY - posY + (1 - stepY) / 2) / rayDirY;
+				}
+				//Calculate height of line to draw screen
+				int lineHeight = (int)(h / perpWallDist);
+				//Calculate lowest and highest pixel to fill in curent stripe
+				int drawStart = -lineHeight / 2 + h / 2;
+				if (drawStart < 0)
+				{
+					drawStart = 0;
+				}
+				int drawEnd = lineHeight / 2 + h / 2;
+				if (drawEnd >= h)
+				{
+					drawEnd = h - 1;
+				}
+				//choose wall color
+				ColorRGB color;
+				switch (map[mapX][mapY])
+				{
+				case 1:
+					color = RGB_Red;
+					break;
+				case 2:
+					color = RGB_Green;
+					break;
+				case 3:
+					color = RGB_Blue;
+					break;
+				case 4:
+					color = RGB_White;
+					break;
+				default:
+					color = RGB_Yellow;
+					break;
+				}
+				//give x and y sides diffrent brightness
+				if (side == 1)
+				{
+					color = color / 2;
+				}
+				//draw the pixels of the stripe as a vertical line
+				verLine(x, drawStart, drawEnd, color);
 			}
+
 		}
 	}
 	return 0;
