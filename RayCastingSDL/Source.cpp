@@ -4,6 +4,13 @@
 #define mapHeight 24
 using namespace QuickCG;
 
+FILE _iob[] = { *stdin, *stdout, *stderr };
+
+extern "C" FILE * __cdecl __iob_func(void)
+{
+	return _iob;
+}
+
 int map[mapWidth][mapHeight]=
 {
 	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -162,7 +169,51 @@ int main(int argc, char * argv[])
 				//draw the pixels of the stripe as a vertical line
 				verLine(x, drawStart, drawEnd, color);
 			}
-
+			//timing for input and FPS counter
+			oldTime = time;
+			time = getTicks();
+			double frameTime = (time - oldTime) / 1000.0;
+			print(1.0 / frameTime);
+			redraw();
+			cls();
+			//speed modifires
+			double moveSpeed = frameTime * 5.0;
+			double rotSpeed = frameTime * 3.0;
+			readKeys();
+			//move forward if no wall in front of you
+			if (keyDown(SDLK_UP))
+			{
+				if (map[int(posX + dirX * moveSpeed)][int(posY)] == false) posX += dirX * moveSpeed;
+				if (map[int(posX)][int(posY + dirY * moveSpeed)] == false) posY += dirY * moveSpeed;
+			}
+			//move backwards if no wall behind you
+			if (keyDown(SDLK_DOWN))
+			{
+				if (map[int(posX - dirX * moveSpeed)][int(posY)] == false) posX -= dirX * moveSpeed;
+				if (map[int(posX)][int(posY - dirY * moveSpeed)] == false) posY -= dirY * moveSpeed;
+			}
+			//rotate to the right
+			if (keyDown(SDLK_RIGHT))
+			{
+				//both camera direction and camera plane must be rotated
+				double oldDirX = dirX;
+				dirX = dirX * cos(-rotSpeed) - dirY * sin(-rotSpeed);
+				dirY = oldDirX * sin(-rotSpeed) + dirY * cos(-rotSpeed);
+				double oldPlaneX = planeX;
+				planeX = planeX * cos(-rotSpeed) - planeY * sin(-rotSpeed);
+				planeY = oldPlaneX * sin(-rotSpeed) + planeY * cos(-rotSpeed);
+			}
+			//rotate to the left
+			if (keyDown(SDLK_LEFT))
+			{
+				//both camera direction and camera plane must be rotated
+				double oldDirX = dirX;
+				dirX = dirX * cos(rotSpeed) - dirY * sin(rotSpeed);
+				dirY = oldDirX * sin(rotSpeed) + dirY * cos(rotSpeed);
+				double oldPlaneX = planeX;
+				planeX = planeX * cos(rotSpeed) - planeY * sin(rotSpeed);
+				planeY = oldPlaneX * sin(rotSpeed) + planeY * cos(rotSpeed);
+			}
 		}
 	}
 	return 0;
