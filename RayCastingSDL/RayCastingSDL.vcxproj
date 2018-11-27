@@ -127,6 +127,19 @@
   <ItemGroup>
     <ClInclude Include="quickcg.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Texture\barrel.png" />
+    <Image Include="Texture\bluestone.png" />
+    <Image Include="Texture\colorstone.png" />
+    <Image Include="Texture\eagle.png" />
+    <Image Include="Texture\greenlight.png" />
+    <Image Include="Texture\greystone.png" />
+    <Image Include="Texture\mossy.png" />
+    <Image Include="Texture\pillar.png" />
+    <Image Include="Texture\purplestone.png" />
+    <Image Include="Texture\redbrick.png" />
+    <Image Include="Texture\wood.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

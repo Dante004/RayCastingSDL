@@ -27,4 +27,39 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Texture\barrel.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\bluestone.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\colorstone.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\eagle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\greenlight.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\greystone.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\mossy.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\pillar.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\purplestone.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\redbrick.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Texture\wood.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
