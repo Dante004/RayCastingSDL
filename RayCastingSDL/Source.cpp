@@ -4,9 +4,10 @@
 #include <iostream>
 
 #include "quickcg.h"
+#include "Source.h"
 using namespace QuickCG;
-#define screenWidth 800
-#define screenHeight 600
+#define screenWidth 1280
+#define screenHeight 720
 #define texWidth 64
 #define texHeight 64
 #define mapWidth 24
@@ -62,18 +63,19 @@ int main(int /*argc*/, char */*argv*/[])
 	std::vector<Uint32> texture[8];
 	for (int i = 0; i < 8; i++) texture[i].resize(texWidth * texHeight);
 
-	screen(screenWidth, screenHeight, 0, "Raycaster");
+	//load some textures
+	unsigned long tw, th, error = 0;
+	error |= loadImage(texture[0], tw, th, "Texture/eagle.png");
+	error |= loadImage(texture[1], tw, th, "Texture/redbrick.png");
+	error |= loadImage(texture[2], tw, th, "Texture/purplestone.png");
+	error |= loadImage(texture[3], tw, th, "Texture/greystone.png");
+	error |= loadImage(texture[4], tw, th, "Texture/bluestone.png");
+	error |= loadImage(texture[5], tw, th, "Texture/mossy.png");
+	error |= loadImage(texture[6], tw, th, "Texture/wood.png");
+	error |= loadImage(texture[7], tw, th, "Texture/colorstone.png");
+	if (error) { std::cout << "error loading images" << std::endl; return 1; }
 
-	//generate some textures
-	unsigned long tw, th;
-	loadImage(texture[0], tw, th, "Texture/eagle.png");
-	loadImage(texture[1], tw, th, "Texture/redbrick.png");
-	loadImage(texture[2], tw, th, "Texture/purplestone.png");
-	loadImage(texture[3], tw, th, "Texture/graystone.png");
-	loadImage(texture[4], tw, th, "Texture/blue.png");
-	loadImage(texture[5], tw, th, "Texture/mossy.png");
-	loadImage(texture[6], tw, th, "Texture/wood.png");
-	loadImage(texture[7], tw, th, "Texture/colorstone.png");
+	screen(screenWidth, screenHeight, 0, "Raycaster");
 
 	//start the main loop
 	while (!done())
@@ -229,6 +231,11 @@ int main(int /*argc*/, char */*argv*/[])
 				int floorTexX, floorTexY;
 				floorTexX = int(currentFloorX * texWidth) % texWidth;
 				floorTexY = int(currentFloorY * texHeight) % texHeight;
+
+				int checkerBoardPattern = (int(currentFloorX) + int(currentFloorY)) % 2;
+				int floorTexture;
+				if (checkerBoardPattern == 0) floorTexture = 3;
+				else floorTexture = 4;
 
 				//floor
 				buffer[y][x] = (texture[1][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
