@@ -4,9 +4,10 @@
 #include <iostream>
 
 #include "quickcg.h"
+#include "Source.h"
 using namespace QuickCG;
-#define screenWidth 512
-#define screenHeight 384
+#define screenWidth 1280
+#define screenHeight 720
 #define texWidth 64
 #define texHeight 64
 #define mapWidth 24
@@ -62,18 +63,19 @@ int main(int /*argc*/, char */*argv*/[])
 	std::vector<Uint32> texture[8];
 	for (int i = 0; i < 8; i++) texture[i].resize(texWidth * texHeight);
 
-	screen(screenWidth, screenHeight, 0, "Raycaster");
+	//load some textures
+	unsigned long tw, th, error = 0;
+	error |= loadImage(texture[0], tw, th, "Texture/eagle.png");
+	error |= loadImage(texture[1], tw, th, "Texture/redbrick.png");
+	error |= loadImage(texture[2], tw, th, "Texture/purplestone.png");
+	error |= loadImage(texture[3], tw, th, "Texture/greystone.png");
+	error |= loadImage(texture[4], tw, th, "Texture/bluestone.png");
+	error |= loadImage(texture[5], tw, th, "Texture/mossy.png");
+	error |= loadImage(texture[6], tw, th, "Texture/wood.png");
+	error |= loadImage(texture[7], tw, th, "Texture/colorstone.png");
+	if (error) { std::cout << "error loading images" << std::endl; return 1; }
 
-	//generate some textures
-	unsigned long tw, th;
-	loadImage(texture[0], tw, th, "Texture/eagle.png");
-	loadImage(texture[1], tw, th, "Texture/redbrick.png");
-	loadImage(texture[2], tw, th, "Texture/purplestone.png");
-	loadImage(texture[3], tw, th, "Texture/graystone.png");
-	loadImage(texture[4], tw, th, "Texture/blue.png");
-	loadImage(texture[5], tw, th, "Texture/mossy.png");
-	loadImage(texture[6], tw, th, "Texture/wood.png");
-	loadImage(texture[7], tw, th, "Texture/colorstone.png");
+	screen(screenWidth, screenHeight, 0, "Raycaster");
 
 	//start the main loop
 	while (!done())
@@ -105,7 +107,7 @@ int main(int /*argc*/, char */*argv*/[])
 			int hit = 0; //was there a wall hit?
 			int side; //was a NS or a EW wall hit?
 
-			//calculate step and initial sideDist
+					  //calculate step and initial sideDist
 			if (rayDirX < 0)
 			{
 				stepX = -1;
@@ -162,7 +164,7 @@ int main(int /*argc*/, char */*argv*/[])
 			//texturing calculations
 			int texNum = map[mapX][mapY] - 1; //1 subtracted from it so that texture 0 can be used!
 
-			//calculate value of wallX
+											  //calculate value of wallX
 			double wallX; //where exactly the wall was hit
 			if (side == 0) wallX = posY + perpWallDist * rayDirY;
 			else           wallX = posX + perpWallDist * rayDirX;
@@ -177,7 +179,7 @@ int main(int /*argc*/, char */*argv*/[])
 			while (++y < drawEnd)
 			{
 				int d = y * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
-				// TODO: avoid the division to speed this up
+															   // TODO: avoid the division to speed this up
 				int texY = ((d * texHeight) / lineHeight) / 256;
 				Uint32 color = texture[texNum][texHeight * texY + texX];
 				//make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
@@ -185,18 +187,61 @@ int main(int /*argc*/, char */*argv*/[])
 				buffer[y][x] = color;
 			}
 
-			/*
-			for (int y = drawStart; y < drawEnd; ++y)
+			//Floor casting
+			double floorXWall, floorYWall; //x,y position of the floor texel at the bottom of the wall
+
+			//4 diffrent wall directions possible
+			if (side == 0 && rayDirX > 0)
 			{
-				int d = y * 256 - h * 128 + lineHeight * 128;  //256 and 128 factors to avoid floats
-				// TODO: avoid the division to speed this up
-				int texY = ((d * texHeight) / lineHeight) / 256;
-				Uint32 color = texture[texNum][texHeight * texY + texX];
-				//make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
-				if (side == 1) color = (color >> 1) & 8355711;
-				buffer[y][x] = color;
+				floorXWall = mapX;
+				floorYWall = mapY + wallX;
 			}
-			*/
+			else if (side == 0 && rayDirX < 0)
+			{
+				floorXWall = mapX + 1.0;
+				floorYWall = mapY + wallX;
+			}
+			else if (side == 1 && rayDirY > 0)
+			{
+				floorXWall = mapX + wallX;
+				floorYWall = mapY;
+			}
+			else
+			{
+				floorXWall = mapX + wallX;
+				floorYWall = mapY + 1.0;
+			}
+			double distWall, distPlayer, currentDist;
+
+			distWall = perpWallDist;
+			distPlayer = 0.0;
+
+			if (drawEnd < 0) drawEnd = h; //becomes < 0 when the integer overflows
+
+			//draw the floor from drawEnd to the bottom of the screen
+			for (int y = drawEnd + 1; y < h; y++)
+			{
+				currentDist = h / (2.0 * y - h); //you could make a small lookup table for this instead
+
+				double weight = (currentDist - distPlayer) / (distWall - distPlayer);
+
+				double currentFloorX = weight * floorXWall + (1.0 - weight) * posX;
+				double currentFloorY = weight * floorYWall + (1.0 - weight) * posY;
+
+				int floorTexX, floorTexY;
+				floorTexX = int(currentFloorX * texWidth) % texWidth;
+				floorTexY = int(currentFloorY * texHeight) % texHeight;
+
+				int checkerBoardPattern = (int(currentFloorX) + int(currentFloorY)) % 2;
+				int floorTexture;
+				if (checkerBoardPattern == 0) floorTexture = 3;
+				else floorTexture = 4;
+
+				//floor
+				buffer[y][x] = (texture[1][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
+				//ceiling (symmetrical!)
+				buffer[h - y][x] = texture[6][texWidth * floorTexY + floorTexX];
+			}
 		}
 
 		drawBuffer(buffer[0]);
@@ -249,4 +294,8 @@ int main(int /*argc*/, char */*argv*/[])
 		}
 	}
 	return 0;
+}
+
+void GenerateWall(int x, double dirX, double planeX, double dirY, double planeY, double posX, double posY, std::vector<Uint32>  texture[8])
+{
 }
