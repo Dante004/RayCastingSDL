@@ -12,6 +12,7 @@ using namespace QuickCG;
 #define texHeight 64
 #define mapWidth 24
 #define mapHeight 24
+#define numSprites 19
 using namespace QuickCG;
 
 FILE _iob[] = { *stdin, *stdout, *stderr };
@@ -23,31 +24,76 @@ extern "C" FILE * __cdecl __iob_func(void)
 
 int map[mapWidth][mapHeight] =
 {
-	{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7},
-	{4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
-	{4,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
-	{4,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
-	{4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
-	{4,0,4,0,0,0,0,5,5,5,5,5,5,5,5,5,7,7,0,7,7,7,7,7},
-	{4,0,5,0,0,0,0,5,0,5,0,5,0,5,0,5,7,0,0,0,7,7,7,1},
-	{4,0,6,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
-	{4,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,1},
-	{4,0,8,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
-	{4,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,7,7,7,1},
-	{4,0,0,0,0,0,0,5,5,5,5,0,5,5,5,5,7,7,7,7,7,7,7,1},
-	{6,6,6,6,6,6,6,6,6,6,6,0,6,6,6,6,6,6,6,6,6,6,6,6},
-	{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-	{6,6,6,6,6,6,0,6,6,6,6,0,6,6,6,6,6,6,6,6,6,6,6,6},
-	{4,4,4,4,4,4,0,4,4,4,6,0,6,2,2,2,2,2,2,2,3,3,3,3},
-	{4,0,0,0,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,0,0,0,2},
-	{4,0,0,0,0,0,0,0,0,0,0,0,6,2,0,0,5,0,0,2,0,0,0,2},
-	{4,0,0,0,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,2,0,2,2},
-	{4,0,6,0,6,0,0,0,0,4,6,0,0,0,0,0,5,0,0,0,0,0,0,2},
-	{4,0,0,5,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,2,0,2,2},
-	{4,0,6,0,6,0,0,0,0,4,6,0,6,2,0,0,5,0,0,2,0,0,0,2},
-	{4,0,0,0,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,0,0,0,2},
-	{4,4,4,4,4,4,4,4,4,4,1,1,1,2,2,2,2,2,2,3,3,3,3,3}
+	{8,8,8,8,8,8,8,8,8,8,8,4,4,6,4,4,6,4,6,4,4,4,6,4},
+	{8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,0,0,0,0,0,0,4},
+	{8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,6},
+	{8,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6},
+	{8,0,3,3,0,0,0,0,0,8,8,4,0,0,0,0,0,0,0,0,0,0,0,4},
+	{8,0,0,0,0,0,0,0,0,0,8,4,0,0,0,0,0,6,6,6,0,6,4,6},
+	{8,8,8,8,0,8,8,8,8,8,8,4,4,4,4,4,4,6,0,0,0,0,0,6},
+	{7,7,7,7,0,7,7,7,7,0,8,0,8,0,8,0,8,4,0,4,0,6,0,6},
+	{7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,0,0,0,0,0,6},
+	{7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,0,0,0,0,4},
+	{7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,6,0,6,0,6,0,6},
+	{7,7,0,0,0,0,0,0,7,8,0,8,0,8,0,8,8,6,4,6,0,6,6,6},
+	{7,7,7,7,0,7,7,7,7,8,8,4,0,6,8,4,8,3,3,3,0,3,3,3},
+	{2,2,2,2,0,2,2,2,2,4,6,4,0,0,6,0,6,3,0,0,0,0,0,3},
+	{2,2,0,0,0,0,0,2,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3},
+	{2,0,0,0,0,0,0,0,2,4,0,0,0,0,0,0,4,3,0,0,0,0,0,3},
+	{1,0,0,0,0,0,0,0,1,4,4,4,4,4,6,0,6,3,3,0,0,0,3,3},
+	{2,0,0,0,0,0,0,0,2,2,2,1,2,2,2,6,6,0,0,5,0,5,0,5},
+	{2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5},
+	{2,0,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,5,0,5,0,5},
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5},
+	{2,0,0,0,0,0,0,0,2,0,0,0,0,0,2,5,0,5,0,5,0,5,0,5},
+	{2,2,0,0,0,0,0,2,2,2,0,0,0,2,2,0,5,0,5,0,0,0,5,5},
+	{2,2,2,2,1,2,2,2,2,2,2,1,2,2,2,5,5,5,5,5,5,5,5,5}
 };
+
+struct Sprite
+{
+	double x;
+	double y;
+	int texture;
+};
+
+Sprite sprite[numSprites] =
+{
+	{20.5, 11.5, 10}, //green light in front of playerstart
+  //green lights in every room
+  {18.5,4.5, 10},
+  {10.0,4.5, 10},
+  {10.0,12.5,10},
+  {3.5, 6.5, 10},
+  {3.5, 20.5,10},
+  {3.5, 14.5,10},
+  {14.5,20.5,10},
+
+  //row of pillars in front of wall: fisheye test
+  {18.5, 10.5, 9},
+  {18.5, 11.5, 9},
+  {18.5, 12.5, 9},
+
+  //some barrels around the map
+  {21.5, 1.5, 8},
+  {15.5, 1.5, 8},
+  {16.0, 1.8, 8},
+  {16.2, 1.2, 8},
+  {3.5,  2.5, 8},
+  {9.5, 15.5, 8},
+  {10.0, 15.1,8},
+  {10.5, 15.8,8},
+};
+
+//1D Zbuffer
+double ZBuffer[screenWidth];
+
+//arrays used to sort the sprites
+int spriteOrder[numSprites];
+double spriteDistance[numSprites];
+
+//function used to sort the sprites
+void combSort(int* order, double* dist, int amount);
 
 Uint32 buffer[screenHeight][screenWidth];
 
@@ -60,7 +106,7 @@ int main(int /*argc*/, char */*argv*/[])
 	double time = 0; //time of current frame
 	double oldTime = 0; //time of previous frame
 
-	std::vector<Uint32> texture[8];
+	std::vector<Uint32> texture[11];
 	for (int i = 0; i < 8; i++) texture[i].resize(texWidth * texHeight);
 
 	//load some textures
@@ -73,6 +119,9 @@ int main(int /*argc*/, char */*argv*/[])
 	error |= loadImage(texture[5], tw, th, "Texture/mossy.png");
 	error |= loadImage(texture[6], tw, th, "Texture/wood.png");
 	error |= loadImage(texture[7], tw, th, "Texture/colorstone.png");
+	error |= loadImage(texture[8], tw, th, "Texture/barrel.png");
+	error |= loadImage(texture[9], tw, th, "Texture/pillar.png");
+	error |= loadImage(texture[10], tw, th, "Texture/greenlight.png");
 	if (error) { std::cout << "error loading images" << std::endl; return 1; }
 
 	screen(screenWidth, screenHeight, 0, "Raycaster");
@@ -80,7 +129,7 @@ int main(int /*argc*/, char */*argv*/[])
 	//start the main loop
 	while (!done())
 	{
-		for (int x = 0; x < w; x++)
+		for (int x = 0; x < w; ++x)
 		{
 			//calculate ray position and direction
 			double cameraX = 2 * x / double(w) - 1; //x-coordinate in camera space
@@ -187,6 +236,9 @@ int main(int /*argc*/, char */*argv*/[])
 				buffer[y][x] = color;
 			}
 
+			//set the zbuffer for the sprite casting
+			ZBuffer[x] = perpWallDist; //perpendicular distance in used
+
 			//Floor casting
 			double floorXWall, floorYWall; //x,y position of the floor texel at the bottom of the wall
 
@@ -219,7 +271,7 @@ int main(int /*argc*/, char */*argv*/[])
 			if (drawEnd < 0) drawEnd = h; //becomes < 0 when the integer overflows
 
 			//draw the floor from drawEnd to the bottom of the screen
-			for (int y = drawEnd + 1; y < h; y++)
+			for (int y = drawEnd + 1; y < h; ++y)
 			{
 				currentDist = h / (2.0 * y - h); //you could make a small lookup table for this instead
 
@@ -232,15 +284,72 @@ int main(int /*argc*/, char */*argv*/[])
 				floorTexX = int(currentFloorX * texWidth) % texWidth;
 				floorTexY = int(currentFloorY * texHeight) % texHeight;
 
-				int checkerBoardPattern = (int(currentFloorX) + int(currentFloorY)) % 2;
-				int floorTexture;
-				if (checkerBoardPattern == 0) floorTexture = 3;
-				else floorTexture = 4;
-
 				//floor
-				buffer[y][x] = (texture[1][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
+				buffer[y][x] = (texture[3][texWidth * floorTexY + floorTexX] >> 1) & 8355711;
 				//ceiling (symmetrical!)
 				buffer[h - y][x] = texture[6][texWidth * floorTexY + floorTexX];
+			}
+		}
+
+		//Sprite casting
+		//sort sprites from far to close
+		for (int i = 0; i < numSprites; ++i)
+		{
+			spriteOrder[i] = i;
+			spriteDistance[i] = ((posX - sprite[i].x)*(posX - sprite[i].x) + (posY - sprite[i].y)*(posY - sprite[i].y));
+		}
+		combSort(spriteOrder, spriteDistance, numSprites);
+		//after sorting the sprtite do the projection and draw them
+		for (int i = 0; i < numSprites; ++i)
+		{
+			//translate sprite position to relative to camera
+			double spriteX = sprite[spriteOrder[i]].x - posX;
+			double spriteY = sprite[spriteOrder[i]].y - posY;
+
+			//transform sprite with the inverse camera matrix
+			// [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+			// [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+			// [ planeY   dirY ]                                          [ -planeY  planeX ]
+
+			double invDet = 1.0 / (planeX * dirY - dirX * planeY); //required for correct matrix multiplication
+
+			double transformX = invDet * (dirY * spriteX - dirX * spriteY);
+			double transformY = invDet * (-planeY * spriteX + planeX * spriteY); //this is actually the depth inside the screen, that what Z is in 3D
+
+			int spriteScreenX = int((w / 2) * (1 + transformX / transformY));
+
+			//calculate height of the sprite on screen
+			int spriteHeight = abs(int(h / (transformY))); //using "transformY" instead of the real distance prevents fisheye
+			//calculate lowest and highest pixel to fill in current stripe
+			int drawStartY = -spriteHeight / 2 + h / 2;
+			if (drawStartY < 0) drawStartY = 0;
+			int drawEndY = spriteHeight / 2 + h / 2;
+			if (drawEndY >= h) drawEndY = h - 1;
+
+			//calculate width of the sprite
+			int spriteWidth = abs(int(h / (transformY)));
+			int drawStartX = -spriteWidth / 2 + spriteScreenX;
+			if (drawStartX < 0) drawStartX = 0;
+			int drawEndX = spriteWidth / 2 + spriteScreenX;
+			if (drawEndX >= w) drawEndX = w - 1;
+
+			//loop through every vertical stripe of the sprite on screen
+			for (int stripe = drawStartX; stripe < drawEndX; ++stripe)
+			{
+				int texX = int(256 * (stripe - (-spriteWidth / 2 + spriteScreenX)) * texWidth / spriteWidth) / 256;
+				//the conditions in the if are:
+				//1) it's in front of camera plane so you don't see things behind you
+				//2) it's on the screen (left)
+				//3) it's on the screen (right)
+				//4) ZBuffer, with perpendicular distance
+				if (transformY > 0 && stripe > 0 && stripe < w && transformY < ZBuffer[stripe])
+					for (int y = drawStartY; y < drawEndY; ++y) //for every pixel of the current stripe
+					{
+						int d = (y) * 256 - h * 128 + spriteHeight * 128; //256 and 128 factors to avoid floats
+						int texY = ((d * texHeight) / spriteHeight) / 256;
+						Uint32 color = texture[sprite[spriteOrder[i]].texture][texWidth * texY + texX]; //get current color from the texture
+						if ((color & 0x00FFFFFF) != 0) buffer[y][stripe] = color; //paint pixel if it isn't black, black is the invisible color
+					}
 			}
 		}
 
@@ -296,6 +405,27 @@ int main(int /*argc*/, char */*argv*/[])
 	return 0;
 }
 
-void GenerateWall(int x, double dirX, double planeX, double dirY, double planeY, double posX, double posY, std::vector<Uint32>  texture[8])
+//sort algorithm
+void combSort(int* order, double* dist, int amount)
 {
+	int gap = amount;
+	bool swapped = false;
+	while (gap > 1 || swapped)
+	{
+		//shrink factor 1.3
+		gap = (gap * 10) / 13;
+		if (gap == 9 || gap == 10) gap = 11;
+		if (gap < 1) gap = 1;
+		swapped = false;
+		for (int i = 0; i < amount - gap; i++)
+		{
+			int j = i + gap;
+			if (dist[i] < dist[j])
+			{
+				std::swap(dist[i], dist[j]);
+				std::swap(order[i], order[j]);
+				swapped = true;
+			}
+		}
+	}
 }
