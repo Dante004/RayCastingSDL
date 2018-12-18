@@ -6,8 +6,8 @@
 #include "quickcg.h"
 #include "Source.h"
 using namespace QuickCG;
-#define screenWidth 1280
-#define screenHeight 720
+#define screenWidth 800
+#define screenHeight 600
 #define texWidth 64
 #define texHeight 64
 #define mapWidth 24
@@ -394,8 +394,7 @@ void RayCasting(double dirX, double planeX, double dirY, double planeY, double p
 		double dx = posX - sprite[spriteOrder[i]].x;
 		double dy = posY - sprite[spriteOrder[i]].y;
 		int angle = std::abs(round(atan2(dy, dx)));
-		if (angle > 7) angle = 7;
-		if (angle < 0) angle = 0;
+		//if (angle > 7) angle = 7;
 
 		//loop through every vertical stripe of the sprite on screen
 		for (int stripe = drawStartX; stripe < drawEndX; ++stripe)

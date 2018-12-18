@@ -129,10 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="quickcg.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Source_copy.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="quickcg.h" />
     <ClInclude Include="Source.h" />
   </ItemGroup>
